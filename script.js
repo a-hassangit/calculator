@@ -1,19 +1,17 @@
-// Light / Dark Theme
+// Light/Dark Theme
 const toggleElement = document.querySelector(".themes__toggle");
 
-const toggleDarkTheme = () => {
+const toggleDarkTheme = () =>
   toggleElement.classList.toggle("themes__toggle--isActive");
-};
 
 const toggleDarkThemeWithEnter = (event) => {
-  if (event.key === "Enter") toggleDarkTheme();
+  event.key === "Enter" && toggleDarkTheme();
 };
 
 toggleElement.addEventListener("keydown", toggleDarkThemeWithEnter);
 toggleElement.addEventListener("click", toggleDarkTheme);
 
-// ================= Calculator Logic =================
-
+// Logic for calculator
 let storedNumber = "";
 let currentNumber = "";
 let operation = "";
@@ -25,16 +23,15 @@ const updateScreen = (value) => {
   resultElement.innerText = !value ? "0" : value;
 };
 
-// handle numbers
 const numberButtonHandler = (value) => {
   if (value === "." && currentNumber.includes(".")) return;
-  if (value === "." && !currentNumber) return;
-
+  if (value === "0" && !currentNumber) return;
+  if (currentNumber.length === 18) return;
+  console.log(currentNumber);
   currentNumber += value;
   updateScreen(currentNumber);
 };
 
-// reset calculator
 const resetButtonHandler = () => {
   storedNumber = "";
   currentNumber = "";
@@ -42,7 +39,6 @@ const resetButtonHandler = () => {
   updateScreen(currentNumber);
 };
 
-// delete last digit
 const deleteButtonHandler = () => {
   if (!currentNumber || currentNumber === "0") return;
 
@@ -55,21 +51,6 @@ const deleteButtonHandler = () => {
   updateScreen(currentNumber);
 };
 
-// handle operations (+ - * /)
-const operationButtonHandler = (operationValue) => {
-  if (!storedNumber && !currentNumber) return;
-
-  if (currentNumber && !storedNumber) {
-    storedNumber = currentNumber;
-    currentNumber = "";
-    operation = operationValue;
-  } else if (storedNumber) {
-    if (currentNumber) executeOperation();
-    operation = operationValue;
-  }
-};
-
-// execute calculation
 const executeOperation = () => {
   if (currentNumber && storedNumber && operation) {
     switch (operation) {
@@ -92,27 +73,39 @@ const executeOperation = () => {
   }
 };
 
-// handle buttons
+const operationButtonHandler = (operationValue) => {
+  if (!storedNumber && !currentNumber) return;
+
+  if (currentNumber && !storedNumber) {
+    storedNumber = currentNumber;
+    currentNumber = "";
+    operation = operationValue;
+  } else if (storedNumber) {
+    operation = operationValue;
+
+    if (currentNumber) executeOperation();
+  }
+};
+
 const keyElementsHandler = (element) => {
   element.addEventListener("click", () => {
     const type = element.dataset.type;
-    const value = element.dataset.value;
 
     if (type === "number") {
-      numberButtonHandler(value);
+      numberButtonHandler(element.dataset.value);
     } else if (type === "operation") {
-      switch (value) {
+      switch (element.dataset.value) {
         case "c":
           resetButtonHandler();
           break;
-        case "del":
+        case "Backspace":
           deleteButtonHandler();
           break;
-        case "=":
+        case "Enter":
           executeOperation();
           break;
         default:
-          operationButtonHandler(value);
+          operationButtonHandler(element.dataset.value);
       }
     }
   });
